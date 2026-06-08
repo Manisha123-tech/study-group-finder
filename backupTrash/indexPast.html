@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Group Finder</title>
+  <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===================== HEADER / NAV ===================== -->
+  <header class="header" id="top">
+    <div class="container nav-container">
+
+      <!-- Logo -->
+      <a href="#top" class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Study<span class="accent">Group</span></span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="nav-links" id="navLinks">
+        <a href="#top" class="nav-link active">Home</a>
+        <a href="#find-groups" class="nav-link">Find Groups</a>
+        <a href="#register" class="nav-link">My Profile</a>
+        <a href="#about" class="nav-link">About</a>
+      </nav>
+
+      <!-- Hamburger button for mobile -->
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+    </div>
+  </header>
+
+
+  <!-- ===================== HERO SECTION ===================== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-shapes">
+      <!-- Decorative blobs drawn via CSS -->
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <div class="container hero-content">
+      <p class="hero-eyebrow">🎓 For Students, By Students</p>
+      <h1 class="hero-heading">Find Your Perfect<br /><span class="highlight">Study Partner</span></h1>
+      <p class="hero-desc">
+        Connect with classmates who share your subjects, schedule, and study style.
+        Build groups, crack exams, and grow together.
+      </p>
+      <div class="hero-cta-group">
+        <a href="#register" class="btn btn-primary">Get Started →</a>
+        <a href="#find-groups" class="btn btn-ghost">Browse Groups</a>
+      </div>
+      <!-- Quick stats bar -->
+      <div class="hero-stats">
+        <div class="stat"><strong>1,200+</strong><span>Students</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><strong>340+</strong><span>Groups</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><strong>50+</strong><span>Colleges</span></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== REGISTRATION FORM ===================== -->
+  <section class="section" id="register">
+    <div class="container">
+      <div class="section-label">Create Profile</div>
+      <h2 class="section-title">Tell Us About Yourself</h2>
+      <p class="section-sub">Fill in your details and we'll match you with the right study partners.</p>
+
+      <form class="register-form" id="registerForm" novalidate>
+
+        <!-- Row 1 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fullName">Full Name <span class="req">*</span></label>
+            <input type="text" id="fullName" name="fullName" placeholder="e.g. Priya Sharma" autocomplete="off" />
+            <span class="error-msg" id="err-fullName"></span>
+          </div>
+          <div class="form-group">
+            <label for="college">College Name <span class="req">*</span></label>
+            <input type="text" id="college" name="college" placeholder="e.g. NIT Patna" autocomplete="off" />
+            <span class="error-msg" id="err-college"></span>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="branch">Branch <span class="req">*</span></label>
+            <input type="text" id="branch" name="branch" placeholder="e.g. Computer Science" autocomplete="off" />
+            <span class="error-msg" id="err-branch"></span>
+          </div>
+          <div class="form-group">
+            <label for="semester">Semester <span class="req">*</span></label>
+            <select id="semester" name="semester">
+              <option value="">— Select Semester —</option>
+              <option>Semester 1</option>
+              <option>Semester 2</option>
+              <option>Semester 3</option>
+              <option>Semester 4</option>
+              <option>Semester 5</option>
+              <option>Semester 6</option>
+              <option>Semester 7</option>
+              <option>Semester 8</option>
+            </select>
+            <span class="error-msg" id="err-semester"></span>
+          </div>
+        </div>
+
+        <!-- Subjects multi-select -->
+        <div class="form-group full-width">
+          <label>Subjects Interested In <span class="req">*</span></label>
+          <div class="subject-chips" id="subjectChips">
+            <!-- Chips rendered by JS -->
+          </div>
+          <span class="error-msg" id="err-subjects"></span>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="availability">Availability Time <span class="req">*</span></label>
+            <input type="text" id="availability" name="availability" placeholder="e.g. Weekdays 6–9 PM" autocomplete="off" />
+            <span class="error-msg" id="err-availability"></span>
+          </div>
+          <div class="form-group">
+            <label>Study Mode <span class="req">*</span></label>
+            <div class="radio-group" id="studyMode">
+              <label class="radio-label"><input type="radio" name="mode" value="Online" /> Online</label>
+              <label class="radio-label"><input type="radio" name="mode" value="Offline" /> Offline</label>
+              <label class="radio-label"><input type="radio" name="mode" value="Both" /> Both</label>
+            </div>
+            <span class="error-msg" id="err-mode"></span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-submit">Create My Profile ✦</button>
+      </form>
+
+      <!-- Profile card preview (hidden until form submitted) -->
+      <div class="profile-preview" id="profilePreview" style="display:none;">
+        <div class="preview-label">✅ Your Profile Card</div>
+        <div class="profile-card" id="profileCard">
+          <!-- Filled dynamically by script.js -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== STUDY PARTNER MATCHES ===================== -->
+  <section class="section section-alt" id="find-groups">
+    <div class="container">
+      <div class="section-label">Discover</div>
+      <h2 class="section-title">Matched Study Partners</h2>
+      <p class="section-sub">Students who share your subjects and schedule.</p>
+
+      <!-- Cards injected by script.js -->
+      <div class="cards-grid" id="matchCards"></div>
+    </div>
+  </section>
+
+
+  <!-- ===================== STUDY GROUPS ===================== -->
+  <section class="section" id="study-groups">
+    <div class="container">
+      <div class="section-label">Join a Group</div>
+      <h2 class="section-title">Active Study Groups</h2>
+      <p class="section-sub">Open groups looking for motivated members like you.</p>
+
+      <!-- Cards injected by script.js -->
+      <div class="cards-grid" id="groupCards"></div>
+    </div>
+  </section>
+
+
+  <!-- ===================== ABOUT ===================== -->
+  <section class="section section-alt about-section" id="about">
+    <div class="container about-grid">
+      <div class="about-text">
+        <div class="section-label">About</div>
+        <h2 class="section-title">Why Study Group Finder?</h2>
+        <p>
+          Studying alone is hard. Finding the right partner is harder. We built
+          Study Group Finder to remove that friction — a single place where
+          engineering students across India can match by subject, college, and
+          time slot.
+        </p>
+        <ul class="about-list">
+          <li>⚡ Instant matches based on your subjects</li>
+          <li>📅 Filter by availability so schedules always align</li>
+          <li>🌐 Online, offline, or both — you decide</li>
+          <li>🔒 Student-only, safe community</li>
+        </ul>
+      </div>
+      <div class="about-visual">
+        <div class="about-badge">
+          <span class="badge-number">4.9</span>
+          <span class="badge-text">Avg. satisfaction<br />from our users</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Study<span class="accent">Group</span></span>
+        <p>Empowering students to learn together.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="#about">Our Mission</a></li>
+          <li><a href="#about">How It Works</a></li>
+          <li><a href="#">Team</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@studygroupfinder.in">hello@studygroupfinder.in</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Study Group Finder. Built for students, with ❤️</p>
+    </div>
+  </footer>
+
+  <!-- Link JavaScript last so DOM is fully loaded -->
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile - Study Group Finder</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body>
+
+  <div id="navbar"></div>
+
+  <!-- PASTE REGISTRATION SECTION HERE -->
+
+  <!-- ===================== REGISTRATION FORM ===================== -->
+  <section class="section" id="register">
+    <div class="container">
+      <div class="section-label">Create Profile</div>
+      <h2 class="section-title">Tell Us About Yourself</h2>
+      <p class="section-sub">Fill in your details and we'll match you with the right study partners.</p>
+
+      <form class="register-form" id="registerForm" novalidate>
+
+        <!-- Row 1 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fullName">Full Name <span class="req">*</span></label>
+            <input type="text" id="fullName" name="fullName" placeholder="e.g. Priya Sharma" autocomplete="off" />
+            <span class="error-msg" id="err-fullName"></span>
+          </div>
+          <div class="form-group">
+            <label for="college">College Name <span class="req">*</span></label>
+            <input type="text" id="college" name="college" placeholder="e.g. NIT Patna" autocomplete="off" />
+            <span class="error-msg" id="err-college"></span>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="branch">Branch <span class="req">*</span></label>
+            <input type="text" id="branch" name="branch" placeholder="e.g. Computer Science" autocomplete="off" />
+            <span class="error-msg" id="err-branch"></span>
+          </div>
+          <div class="form-group">
+            <label for="semester">Semester <span class="req">*</span></label>
+            <select id="semester" name="semester">
+              <option value="">— Select Semester —</option>
+              <option>Semester 1</option>
+              <option>Semester 2</option>
+              <option>Semester 3</option>
+              <option>Semester 4</option>
+              <option>Semester 5</option>
+              <option>Semester 6</option>
+              <option>Semester 7</option>
+              <option>Semester 8</option>
+            </select>
+            <span class="error-msg" id="err-semester"></span>
+          </div>
+        </div>
+
+        <!-- Subjects multi-select -->
+        <div class="form-group full-width">
+          <label>Subjects Interested In <span class="req">*</span></label>
+          <div class="subject-chips" id="subjectChips">
+            <!-- Chips rendered by JS -->
+          </div>
+          <span class="error-msg" id="err-subjects"></span>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="availability">Availability Time <span class="req">*</span></label>
+            <input type="text" id="availability" name="availability" placeholder="e.g. Weekdays 6–9 PM" autocomplete="off" />
+            <span class="error-msg" id="err-availability"></span>
+          </div>
+          <div class="form-group">
+            <label>Study Mode <span class="req">*</span></label>
+            <div class="radio-group" id="studyMode">
+              <label class="radio-label"><input type="radio" name="mode" value="Online" /> Online</label>
+              <label class="radio-label"><input type="radio" name="mode" value="Offline" /> Offline</label>
+              <label class="radio-label"><input type="radio" name="mode" value="Both" /> Both</label>
+            </div>
+            <span class="error-msg" id="err-mode"></span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-submit">Create My Profile ✦</button>
+      </form>
+
+      <!-- Profile card preview (hidden until form submitted) -->
+      <div class="profile-preview" id="profilePreview" style="display:none;">
+        <div class="preview-label">✅ Your Profile Card</div>
+        <div class="profile-card" id="profileCard">
+          <!-- Filled dynamically by script.js -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== STUDY PARTNER MATCHES ===================== -->
+  <section class="section section-alt" id="find-groups">
+    <div class="container">
+      <div class="section-label">Discover</div>
+      <h2 class="section-title">Matched Study Partners</h2>
+      <p class="section-sub">Students who share your subjects and schedule.</p>
+
+      <!-- Cards injected by script.js -->
+      <div class="cards-grid" id="matchCards"></div>
+    </div>
+  </section>
+  <!-- PASTE STUDY PARTNER MATCHES SECTION HERE -->
+
+   <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Study<span class="accent">Group</span></span>
+        <p>Empowering students to learn together.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="#about">Our Mission</a></li>
+          <li><a href="#about">How It Works</a></li>
+          <li><a href="#">Team</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@studygroupfinder.in">hello@studygroupfinder.in</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Study Group Finder. Built for students, with ❤️</p>
+    </div>
+  </footer>
+
+  <script src="js/auth.js"></script>
+  <script src="js/form.js"></script>
+
+<script src="js/matches.js"></script>
+
+<script src="js/groups.js"></script>
+
+<script src="js/storage.js"></script>
+
+<script src="js/navbar.js"></script>
+
+<script src="js/main.js"></script>
+
+<script src="js/navbar-loader.js"></script>
+
+
+<script>
+
+document
+  .getElementById('registerForm')
+  .addEventListener('submit', saveProfile);
+
+async function saveProfile(e) {
+
+  e.preventDefault();
+
+  // GET TOKEN
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+
+    alert('Please login first');
+
+    window.location.href = 'login.html';
+
+    return;
+  }
+
+  // GET VALUES
+  const fullName =
+    document.getElementById('fullName').value;
+
+  const college =
+    document.getElementById('college').value;
+
+  const branch =
+    document.getElementById('branch').value;
+
+  const semester =
+    document.getElementById('semester').value;
+
+  const availability =
+    document.getElementById('availability').value;
+
+  // SUBJECTS
+  const selectedSubjects = [];
+
+  document
+    .querySelectorAll('.subject-chip.active')
+    .forEach(chip => {
+
+      selectedSubjects.push(
+        chip.textContent.trim()
+      );
+
+    });
+
+  // MODE
+  const mode =
+    document.querySelector(
+      'input[name="mode"]:checked'
+    )?.value;
+
+  try {
+
+    const response = await fetch(
+      'http://localhost:3000/api/users',
+      {
+
+        method: 'POST',
+
+        headers: {
+
+          'Content-Type': 'application/json',
+
+          Authorization: `Bearer ${token}`
+
+        },
+
+        body: JSON.stringify({
+
+          fullName,
+          college,
+          branch,
+          semester,
+          subjects: selectedSubjects,
+          availability,
+          mode
+
+        })
+
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      alert('Profile saved successfully');
+
+      console.log(data);
+
+    } else {
+
+      alert(data.error);
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert('Server error');
+
+  }
+
+}
+
+</script>
+
+<script>
+
+window.addEventListener('DOMContentLoaded', async () => {
+
+  const token = localStorage.getItem('token');
+
+  if (!token) return;
+
+  try {
+
+    const response = await fetch(
+      'http://localhost:3000/api/my-profile',
+      {
+
+        method: 'GET',
+
+        headers: {
+
+          Authorization: `Bearer ${token}`
+
+        }
+
+      }
+    );
+
+    const user = await response.json();
+
+    if (!user) return;
+
+    // FILL FORM
+    document.getElementById('fullName').value =
+      user.fullName || '';
+
+    document.getElementById('college').value =
+      user.college || '';
+
+    document.getElementById('branch').value =
+      user.branch || '';
+
+    document.getElementById('semester').value =
+      user.semester || '';
+
+    document.getElementById('availability').value =
+      user.availability || '';
+
+    // SELECT SUBJECT CHIPS
+    if (user.subjects) {
+
+      user.subjects.forEach(subject => {
+
+        const chip = [...document.querySelectorAll('.subject-chip')]
+          .find(c => c.textContent.trim() === subject);
+
+        if (chip) {
+
+          chip.classList.add('selected');
+
+        }
+
+      });
+
+    }
+
+    // SELECT RADIO BUTTON
+    if (user.mode) {
+
+      const radio = document.querySelector(
+        `input[name="mode"][value="${user.mode}"]`
+      );
+
+      if (radio) {
+
+        radio.checked = true;
+
+      }
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+});
+
+</script>
+</body>
+</html>

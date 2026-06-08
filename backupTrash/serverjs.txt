@@ -1,0 +1,416 @@
+//
+const bcrypt = require('bcryptjs');
+const User = require('./models/User');
+//
+const express    = require('express');
+const mongoose   = require('mongoose');
+const cors       = require('cors');
+
+const jwt        = require('jsonwebtoken');
+require('dotenv').config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+/* ── MONGODB CONNECTION ──────────────────────────────────────── */
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('❌ Connection error:', err));
+
+/* ── MODELS ──────────────────────────────────────────────────── */
+
+// Study profile (linked to auth user by email)
+const userSchema = new mongoose.Schema({
+  email:        { type: String, required: true },   // ties profile to auth account
+  fullName:     { type: String, required: true },
+  college:      { type: String, required: true },
+  branch:       { type: String, required: true },
+  semester:     { type: String, required: true },
+  subjects:     { type: [String], required: true },
+  availability: { type: String, required: true },
+  mode:         { type: String, required: true },
+  createdAt:    { type: Date, default: Date.now },
+});
+
+const User = mongoose.model('User', userSchema);
+
+// Auth account (email + hashed password)
+const authUserSchema = new mongoose.Schema({
+  email:     { type: String, required: true, unique: true },
+  password:  { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const AuthUser = mongoose.model('AuthUser', authUserSchema);
+
+/* ── JWT MIDDLEWARE ──────────────────────────────────────────── */
+function verifyToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized — no token provided' });
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;  // { userId, email }
+    next();
+  } catch {
+    return res.status(401).json({ error: 'Unauthorized — invalid or expired token' });
+  }
+}
+
+/* ------Add sign up route in server.js -------------*/
+app.post('/signup', async (req, res) => {
+
+  try {
+
+    const { email, password } = req.body;
+
+    // check if user already exists
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: 'User already exists'
+      });
+    }
+
+    // hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // create new user
+    const newUser = new User({
+      email,
+      password: hashedPassword
+    });
+
+    await newUser.save();
+
+    res.status(201).json({
+      message: 'Account created successfully'
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      message: 'Server error'
+    });
+
+  }
+
+});
+
+/* ── AUTH ROUTES ─────────────────────────────────────────────── */
+
+// POST /api/auth/signup
+app.post('/api/auth/signup', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+    }
+
+    const existing = await AuthUser.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ error: 'Email already registered. Please log in.' });
+    }
+
+    const hashed = await bcrypt.hash(password, 10);
+    const user   = new AuthUser({ email, password: hashed });
+    await user.save();
+
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({ token, email: user.email });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/auth/login
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await AuthUser.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid email or password.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Invalid email or password.' });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({ token, email: user.email });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* ── USER PROFILE ROUTES (protected) ────────────────────────── */
+
+// POST /api/users — save/update study profile (requires login)
+app.post('/api/users', verifyToken, async (req, res) => {
+  try {
+    const email = req.user.email;
+
+    // Upsert: update existing profile for this email or insert new
+    const profile = await User.findOneAndUpdate(
+      { email },
+      { ...req.body, email },
+      { upsert: true, new: true, runValidators: true }
+    );
+
+    res.status(201).json(profile);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// GET /api/users — get all profiles for matching (requires login)
+app.get('/api/users', verifyToken, async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /api/users/:id — delete a profile by ID (requires login)
+app.delete('/api/users/:id', verifyToken, async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: 'User deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* ── START SERVER ────────────────────────────────────────────── */
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
+
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const cors = require('cors');
+// require('dotenv').config();
+
+// const app = express();
+
+// app.use(cors());
+// app.use(express.json());
+
+// // Connect to MongoDB
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => console.log('✅ MongoDB connected'))
+//   .catch(err => console.error('❌ Connection error:', err));
+
+// // User Model
+// const userSchema = new mongoose.Schema({
+//   fullName:     { type: String, required: true },
+//   college:      { type: String, required: true },
+//   branch:       { type: String, required: true },
+//   semester:     { type: String, required: true },
+//   subjects:     { type: [String], required: true },
+//   availability: { type: String, required: true },
+//   mode:         { type: String, required: true },
+//   createdAt:    { type: Date, default: Date.now }
+// });
+
+// const User = mongoose.model('User', userSchema);
+
+// // ── ROUTES ──────────────────────────────────────────────
+
+// // Register a new user
+// app.post('/api/users', async (req, res) => {
+//   try {
+//     const { fullName, college } = req.body;
+
+//     // Prevent duplicates
+//     const existing = await User.findOne({ fullName, college });
+//     if (existing) {
+//       return res.status(200).json({ message: 'User already exists', user: existing });
+//     }
+
+//     const user = new User(req.body);
+//     await user.save();
+//     res.status(201).json(user);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
+
+// // Get all users
+// app.get('/api/users', async (req, res) => {
+//   try {
+//     const users = await User.find();
+//     res.json(users);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+// // Delete a user by ID
+// app.delete('/api/users/:id', async (req, res) => {
+//   try {
+//     await User.findByIdAndDelete(req.params.id);
+//     res.json({ message: 'User deleted' });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+// // ── START SERVER ─────────────────────────────────────────
+
+// app.listen(process.env.PORT || 3000, () => {
+//   console.log(`Server running on port ${process.env.PORT || 3000}`);
+// });
+
+// // const express = require('express');
+// // const mongoose = require('mongoose');
+// // require('dotenv').config();
+
+// // const app = express();
+// // app.use(express.json());
+
+// // // Connect to MongoDB
+// // mongoose.connect(process.env.MONGO_URI)
+// //   .then(() => console.log('✅ MongoDB connected'))
+// //   .catch(err => console.error('❌ Connection error:', err));
+
+// // // Example route
+// // app.get('/', (req, res) => {
+// //   res.send('Server is running!');
+// // });
+
+// // app.listen(process.env.PORT, () => {
+// //   console.log(`Server running on port ${process.env.PORT}`);
+// // });
+
+
+// // //
+// // const User = require('./models/User');
+
+// // // Register a new user (called when form is submitted)
+// // app.post('/api/users', async (req, res) => {
+// //   try {
+// //     const { fullName, college } = req.body;
+
+// //     // Prevent duplicate registrations
+// //     const existing = await User.findOne({ fullName, college });
+// //     if (existing) {
+// //       return res.status(200).json({ message: 'User already exists', user: existing });
+// //     }
+
+// //     const user = new User(req.body);
+// //     await user.save();
+// //     res.status(201).json(user);
+// //   } catch (err) {
+// //     res.status(400).json({ error: err.message });
+// //   }
+// // });
+
+// // // Get all users (used for matching)
+// // app.get('/api/users', async (req, res) => {
+// //   try {
+// //     const users = await User.find();
+// //     res.json(users);
+// //   } catch (err) {
+// //     res.status(500).json({ error: err.message });
+// //   }
+// // });
+
+// //
+// const bcrypt = require('bcryptjs');
+// const jwt = require('jsonwebtoken');
+
+// // ── AUTH USER SCHEMA ─────────────────────────────────────
+// const authUserSchema = new mongoose.Schema({
+//   email:     { type: String, required: true, unique: true },
+//   password:  { type: String, required: true },
+//   createdAt: { type: Date, default: Date.now }
+// });
+
+// const AuthUser = mongoose.model('AuthUser', authUserSchema);
+
+// // ── SIGNUP ───────────────────────────────────────────────
+// app.post('/api/auth/signup', async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Check if user already exists
+//     const existing = await AuthUser.findOne({ email });
+//     if (existing) {
+//       return res.status(400).json({ error: 'Email already registered' });
+//     }
+
+//     // Hash password before saving
+//     const hashed = await bcrypt.hash(password, 10);
+
+//     const user = new AuthUser({ email, password: hashed });
+//     await user.save();
+
+//     // Generate JWT token
+//     const token = jwt.sign(
+//       { userId: user._id, email: user.email },
+//       process.env.JWT_SECRET,
+//       { expiresIn: '7d' }
+//     );
+
+//     res.status(201).json({ token, email: user.email });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+// // ── LOGIN ────────────────────────────────────────────────
+// app.post('/api/auth/login', async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Find user
+//     const user = await AuthUser.findOne({ email });
+//     if (!user) {
+//       return res.status(400).json({ error: 'Invalid email or password' });
+//     }
+
+//     // Compare password
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(400).json({ error: 'Invalid email or password' });
+//     }
+
+//     // Generate JWT token
+//     const token = jwt.sign(
+//       { userId: user._id, email: user.email },
+//       process.env.JWT_SECRET,
+//       { expiresIn: '7d' }
+//     );
+
+//     res.json({ token, email: user.email });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });

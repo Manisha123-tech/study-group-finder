@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login – Study Group Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body class="auth-page">
+
+  <!-- Background blobs -->
+  <div class="auth-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Card -->
+  <div class="auth-wrapper">
+
+    <!-- Left panel (branding) -->
+    <div class="auth-panel auth-panel-left">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Study<span class="accent">Group</span></span>
+      </a>
+      <h2 class="auth-panel-title">Welcome back, scholar.</h2>
+      <p class="auth-panel-sub">Log in to find study partners, join active groups, and keep your streak going.</p>
+      <div class="auth-panel-stats">
+        <div class="ap-stat"><strong>1,200+</strong><span>Students</span></div>
+        <div class="ap-stat"><strong>340+</strong><span>Groups</span></div>
+        <div class="ap-stat"><strong>50+</strong><span>Colleges</span></div>
+      </div>
+      <div class="auth-panel-quote">"Alone we can do so little; together we can do so much."</div>
+    </div>
+
+    <!-- Right panel (form) -->
+    <div class="auth-panel auth-panel-right">
+      <div class="auth-form-box">
+        <h1 class="auth-title">Log in</h1>
+        <p class="auth-sub">New here? <a href="signup.html" class="auth-link">Create an account →</a></p>
+
+        <!-- Alert banner -->
+        <div class="auth-alert" id="authAlert" style="display:none;"></div>
+
+        <div class="auth-fields">
+
+          <div class="auth-field-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="you@college.edu" autocomplete="email" />
+            <span class="auth-err" id="err-email"></span>
+          </div>
+
+          <div class="auth-field-group">
+            <label for="password">Password</label>
+            <div class="password-wrap">
+              <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+              <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password">
+                <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <span class="auth-err" id="err-password"></span>
+          </div>
+
+          <button class="btn btn-primary auth-btn" id="loginBtn">
+            <span id="loginBtnText">Log In →</span>
+            <span id="loginSpinner" class="btn-spinner" style="display:none;"></span>
+          </button>
+
+          <div class="auth-divider"><span>or</span></div>
+
+          <a href="signup.html" class="btn btn-ghost" style="text-align:center;display:block;">Create New Account</a>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+
+document.getElementById('loginBtn')
+.addEventListener('click', handleLogin);
+
+document.getElementById('password')
+.addEventListener('keydown', e => {
+
+  if (e.key === 'Enter') {
+    handleLogin();
+  }
+
+});
+
+// SHOW / HIDE PASSWORD
+document.getElementById('togglePw')
+.addEventListener('click', () => {
+
+  const pw = document.getElementById('password');
+
+  const icon = document.getElementById('eyeIcon');
+
+  if (pw.type === 'password') {
+
+    pw.type = 'text';
+
+    icon.innerHTML =
+      '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+
+  } else {
+
+    pw.type = 'password';
+
+    icon.innerHTML =
+      '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+
+  }
+
+});
+
+
+// LOGIN FUNCTION
+async function handleLogin() {
+
+  const email =
+    document.getElementById('email').value;
+
+  const password =
+    document.getElementById('password').value;
+
+  if (!email || !password) {
+
+    alert('Please fill all fields');
+
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      'http://localhost:3000/api/auth/login',
+      {
+
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          email,
+          password
+        })
+
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      // SAVE TOKEN
+      localStorage.setItem('token', data.token);
+
+      // SAVE EMAIL
+      localStorage.setItem('email', data.email);
+
+      alert('Login successful');
+
+      // REDIRECT
+      window.location.href = 'index.html';
+
+    } else {
+
+      alert(data.error);
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert('Server error');
+
+  }
+
+}
+
+
+
+  </script>
+</body>
+</html>

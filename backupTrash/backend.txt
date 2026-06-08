@@ -1,0 +1,1 @@
+mongodb+srv://gulshanbara:<db_password>@cluster0.dvuonay.mongodb.net/?appName=Cluster0

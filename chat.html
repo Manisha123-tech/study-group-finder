@@ -1,0 +1,135 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="chat.css"/>
+</head>
+<body class="chat-page">
+
+  <div class="chat-shell">
+
+    <!-- ── Header ── -->
+    <header class="chat-header">
+      <button id="chat-back-btn" class="chat-back-btn" aria-label="Go back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+
+      <div class="chat-header-avatar" id="chat-header-initials">?</div>
+
+      <div class="chat-header-info">
+        <h1 class="chat-header-name" id="chat-header-name">Loading…</h1>
+        <span class="chat-header-status">
+          <span class="chat-online-dot"></span>Connected
+        </span>
+      </div>
+    </header>
+
+    <!-- ── Messages ── -->
+    <section class="chat-messages" id="chat-messages">
+      <div class="chat-empty" id="chat-empty">
+        <div class="chat-empty-bubble">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <p class="chat-empty-title">Start the conversation</p>
+        <p class="chat-empty-sub">Say hello to your study partner 👋</p>
+      </div>
+    </section>
+
+    <!-- ── Input ── -->
+    <footer class="chat-footer">
+
+      <!-- Emoji Picker Panel -->
+      <div class="emoji-panel" id="emoji-panel" hidden>
+        <div class="emoji-tabs">
+          <button class="emoji-tab active" data-cat="smileys">😊</button>
+          <button class="emoji-tab" data-cat="gestures">👋</button>
+          <button class="emoji-tab" data-cat="animals">🐶</button>
+          <button class="emoji-tab" data-cat="food">🍕</button>
+          <button class="emoji-tab" data-cat="activities">⚽</button>
+          <button class="emoji-tab" data-cat="travel">✈️</button>
+          <button class="emoji-tab" data-cat="objects">💡</button>
+          <button class="emoji-tab" data-cat="symbols">❤️</button>
+        </div>
+        <div class="emoji-grid" id="emoji-grid"></div>
+      </div>
+
+      <!-- Attachment Menu -->
+      <div class="attach-menu" id="attach-menu" hidden>
+        <button class="attach-option" id="attach-image-btn">
+          <span class="attach-icon" style="background:#3b82f6;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </span>
+          <span>Photo</span>
+        </button>
+        <button class="attach-option" id="attach-doc-btn">
+          <span class="attach-icon" style="background:#8b5cf6;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </span>
+          <span>Document</span>
+        </button>
+      </div>
+
+      <!-- Hidden file inputs -->
+      <input type="file" id="file-image-input" accept="image/*" style="display:none"/>
+      <input type="file" id="file-doc-input" accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx" style="display:none"/>
+
+      <div class="chat-input-wrap">
+
+        <!-- Attachment button -->
+        <button class="chat-tool-btn" id="attach-toggle-btn" aria-label="Attach file" title="Attach file">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+          </svg>
+        </button>
+
+        <textarea
+          id="chat-input"
+          class="chat-input"
+          placeholder="Type a message…"
+          rows="1"
+          maxlength="2000"
+          aria-label="Message"
+        ></textarea>
+
+        <!-- Emoji button -->
+        <button class="chat-tool-btn" id="emoji-toggle-btn" aria-label="Emoji" title="Emoji">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 13s1.5 2 4 2 4-2 4-2"/>
+            <line x1="9" y1="9" x2="9.01" y2="9"/>
+            <line x1="15" y1="9" x2="15.01" y2="9"/>
+          </svg>
+        </button>
+
+        <button id="chat-send-btn" class="chat-send-btn" aria-label="Send">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/navbar-loader.js" defer></script>
+  <script src="js/chat.js" defer></script>
+  <script src="js/chat-media.js" defer></script>
+</body>
+</html>

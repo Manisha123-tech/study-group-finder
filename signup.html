@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up – Study Group Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body class="auth-page">
+
+  <!-- Background blobs -->
+  <div class="auth-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="auth-wrapper">
+
+    <!-- Left panel -->
+    <div class="auth-panel auth-panel-left">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Study<span class="accent">Group</span></span>
+      </a>
+      <h2 class="auth-panel-title">Join the community.</h2>
+      <p class="auth-panel-sub">Create your free account and connect with thousands of engineering students across India.</p>
+      <ul class="auth-perks">
+        <li><span class="perk-icon">⚡</span> Instant subject-based matching</li>
+        <li><span class="perk-icon">📅</span> Schedule-aware study partners</li>
+        <li><span class="perk-icon">🌐</span> Online, offline, or both</li>
+        <li><span class="perk-icon">🔒</span> Student-only community</li>
+      </ul>
+      <div class="auth-panel-quote">"The more that you read, the more things you will know."</div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="auth-panel auth-panel-right">
+      <div class="auth-form-box">
+        <h1 class="auth-title">Create Account</h1>
+        <p class="auth-sub">Already have one? <a href="login.html" class="auth-link">Log in →</a></p>
+
+        <div class="auth-alert" id="authAlert" style="display:none;"></div>
+
+        <div class="auth-fields">
+
+          <div class="auth-field-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="you@college.edu" autocomplete="email" />
+            <span class="auth-err" id="err-email"></span>
+          </div>
+
+          <div class="auth-field-group">
+            <label for="password">Password <span class="field-hint">(min. 6 characters)</span></label>
+            <div class="password-wrap">
+              <input type="password" id="password" placeholder="Create a strong password" autocomplete="new-password" />
+              <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password">
+                <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <!-- Password strength bar -->
+            <div class="pw-strength-bar">
+              <div class="pw-strength-fill" id="pwStrengthFill"></div>
+            </div>
+            <span class="pw-strength-label" id="pwStrengthLabel"></span>
+            <span class="auth-err" id="err-password"></span>
+          </div>
+
+          <div class="auth-field-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="password-wrap">
+              <input type="password" id="confirmPassword" placeholder="Repeat your password" autocomplete="new-password" />
+            </div>
+            <span class="auth-err" id="err-confirmPassword"></span>
+          </div>
+
+          <button class="btn btn-primary auth-btn" id="signupBtn">
+            <span id="signupBtnText">Create Account →</span>
+            <span id="signupSpinner" class="btn-spinner" style="display:none;"></span>
+          </button>
+
+          <div class="auth-divider"><span>or</span></div>
+
+          <a href="login.html" class="btn btn-ghost" style="text-align:center;display:block;">Log In Instead</a>
+
+          <p class="auth-terms">By signing up you agree to our <a href="#" class="auth-link">Terms</a> and <a href="#" class="auth-link">Privacy Policy</a>.</p>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Password strength meter
+    document.getElementById('password').addEventListener('input', function() {
+      updatePasswordStrength(this.value);
+    });
+
+    document.getElementById('signupBtn').addEventListener('click', handleSignup);
+
+async function handleSignup() {
+
+  const email = document.getElementById('email').value;
+
+  const password = document.getElementById('password').value;
+
+  const confirmPassword =
+    document.getElementById('confirmPassword').value;
+
+  // CHECK EMPTY FIELDS
+  if (!email || !password || !confirmPassword) {
+
+    alert('Please fill all fields');
+
+    return;
+  }
+
+  // CHECK PASSWORD MATCH
+  if (password !== confirmPassword) {
+
+    alert('Passwords do not match');
+
+    return;
+  }
+
+  try {
+
+    
+    const response = await fetch(
+     'http://localhost:3000/api/auth/signup',
+     {
+
+    method: 'POST',
+
+    headers: {
+      'Content-Type': 'application/json'
+    },
+
+    body: JSON.stringify({
+      email,
+      password
+    })
+
+  }
+);
+
+
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      alert('Account created successfully');
+
+      // GO TO LOGIN PAGE
+      window.location.href = 'login.html';
+
+    } else {
+
+      alert(data.error);
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert('Server error');
+
+  }
+
+}
+
+    document.getElementById('confirmPassword').addEventListener('keydown', e => { if (e.key === 'Enter') handleSignup(); });
+
+    // Eye toggle
+    document.getElementById('togglePw').addEventListener('click', () => {
+      const pw = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      if (pw.type === 'password') {
+        pw.type = 'text';
+        icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+      } else {
+        pw.type = 'password';
+        icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      }
+    });
+
+    
+  </script>
+</body>
+</html>

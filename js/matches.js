@@ -7,11 +7,12 @@
    - Filters self by email, not name+college (reliable)
    - Compatibility score capped properly per category
    ============================================================ */
-
-const API_BASE = 'http://localhost:3000';
+   // Use API_BASE from auth.js
+//const API_BASE = 'http://localhost:3000'; 
 
 /* ── SAMPLE CARDS (shown before form submitted) ─────────────── */
 
+ 
 const SAMPLE_MATCHES = [
   { name: 'Aarav Mehta',  college: 'NIT Patna',      branch: 'CSE', subject: 'Data Structures',   availability: 'Weekdays 7–9 PM',     mode: 'Online',  avatarColor: '#3b82f6' },
   { name: 'Sneha Gupta',  college: 'BIT Mesra',       branch: 'ECE', subject: 'DBMS',              availability: 'Weekends 10 AM–1 PM', mode: 'Both',    avatarColor: '#ec4899' },
